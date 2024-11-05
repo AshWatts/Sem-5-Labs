@@ -1,0 +1,135 @@
+te@sel-a1-216-18:~$ mongosh 10.10.13.97/te31283_db -u te31283 -p te31283
+Current Mongosh Log ID:	66ff8fd0947e2c0b938c0701
+Connecting to:		mongodb://<credentials>@10.10.13.97:27017/te31283_db?directConnection=true&appName=mongosh+2.0.1
+Using MongoDB:		4.2.13
+Using Mongosh:		2.0.1
+mongosh 2.3.1 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2024-09-25T13:50:13.716+0530: 
+   2024-09-25T13:50:13.716+0530: ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+   2024-09-25T13:50:13.716+0530: **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2024-09-25T13:50:21.542+0530: 
+   2024-09-25T13:50:21.542+0530: ** WARNING: Access control is not enabled for the database.
+   2024-09-25T13:50:21.542+0530: **          Read and write access to data and configuration is unrestricted.
+   2024-09-25T13:50:21.542+0530:
+------
+
+te31283_db> show collections
+CensunData
+Orders
+te31283_db> db.Orders.find().pretty()
+[
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1cb"),
+    cust_id: 1,
+    product: 'A',
+    price: 100,
+    status: 'A'
+  },
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1cc"),
+    cust_id: 1,
+    product: 'B',
+    price: 200,
+    status: 'A'
+  },
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1cd"),
+    cust_id: 2,
+    product: 'C',
+    price: 150,
+    status: 'NA'
+  },
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1ce"),
+    cust_id: 2,
+    product: 'D',
+    price: 50,
+    status: 'A'
+  },
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1cf"),
+    cust_id: 3,
+    product: 'E',
+    price: 300,
+    status: 'A'
+  },
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1d0"),
+    cust_id: 1,
+    product: 'F',
+    price: 250,
+    status: 'A'
+  },
+  {
+    _id: ObjectId("66f3ae0debd001ecaabdb1d1"),
+    cust_id: 3,
+    product: 'G',
+    price: 400,
+    status: 'NA'
+  }
+]
+te31283_db> var mapFunction = function() {
+...     emit(this.cust_id, this.price);
+... };
+
+te31283_db> var reduceFunction = function(key, values) {
+...     return Array.sum(values);
+... };
+
+te31283_db> db.Orders.mapReduce(
+...     mapFunction,
+...     reduceFunction,
+...     { out: "totalSpentPerCustomer" }
+... );
+DeprecationWarning: Collection.mapReduce() is deprecated. Use an aggregation instead.
+See https://docs.mongodb.com/manual/core/map-reduce for details.
+{
+  result: 'totalSpentPerCustomer',
+  timeMillis: 324,
+  counts: { input: 7, emit: 7, reduce: 3, output: 3 },
+  ok: 1
+}
+te31283_db> db.totalSpentPerCustomer.find().pretty();
+[
+  { _id: 1, value: 550 },
+  { _id: 2, value: 200 },
+  { _id: 3, value: 700 }
+]
+te31283_db> db.Orders.countDocuments();
+7
+te31283_db> db.Orders.updateOne(
+...     { cust_id: 2, product: "C" },
+...     { $set: { status: "A" } } // Update status to 'A'
+... );
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+te31283_db> db.Orders.mapReduce(
+...     mapFunction,
+...     reduceFunction,
+...     { out: "totalProductsPerCustomer" }
+... );
+{
+  result: 'totalProductsPerCustomer',
+  timeMillis: 362,
+  counts: { input: 7, emit: 7, reduce: 3, output: 3 },
+  ok: 1
+}
+te31283_db> db.totalProductsPerCustomer.find().pretty();
+[
+  { _id: 1, value: 550 },
+  { _id: 2, value: 200 },
+  { _id: 3, value: 700 }
+]
+te31283_db> 
+
+

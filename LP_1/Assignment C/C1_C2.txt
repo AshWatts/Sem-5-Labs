@@ -1,0 +1,117 @@
+Sure! Let's break down the design of a paper prototype for a simple graphical user interface (GUI), and then we'll use the GOMS modeling technique to analyze user behavior.
+
+### 1. Designing a Paper Prototype for a GUI
+
+**Scenario**: Let's say we are designing a basic weather app that allows users to check the current weather and forecast for their location.
+
+**Paper Prototype Elements**:
+- **Main Screen**: Displays current temperature, weather condition (e.g., sunny, rainy), and a button to get the 7-day forecast.
+- **Forecast Screen**: Shows the 7-day weather forecast with temperatures and conditions for each day.
+
+**Components**:
+- **Text Field**: For entering a city name (optional).
+- **Current Weather Display**: A large box showing temperature and weather condition.
+- **Buttons**:
+  - “Get Weather” (to fetch weather for the entered city)
+  - “7-Day Forecast” (to view the forecast)
+
+**Prototype Visualization**:
+1. **Main Screen**:
+   ```
+   +-------------------------------------+
+   | Enter City: [____________]         |
+   |                                     |
+   | Current Temperature: 75°F          |
+   | Weather: Sunny                      |
+   |                                     |
+   | [Get Weather]  [7-Day Forecast]    |
+   +-------------------------------------+
+   ```
+
+2. **Forecast Screen**:
+   ```
+   +-------------------------------------+
+   | 7-Day Weather Forecast              |
+   |                                     |
+   | Mon: 76°F Sunny                     |
+   | Tue: 74°F Cloudy                    |
+   | Wed: 70°F Rainy                    |
+   | Thu: 72°F Sunny                     |
+   | Fri: 75°F Windy                    |
+   | Sat: 78°F Sunny                     |
+   | Sun: 80°F Sunny                     |
+   |                                     |
+   | [Back to Main]                     |
+   +-------------------------------------+
+   ```
+
+### 2. Implementing GOMS Modeling Technique
+
+**GOMS Overview**:
+GOMS is a modeling technique that breaks down user tasks into four components:
+- **Goals**: What the user wants to achieve.
+- **Operators**: Basic actions the user performs.
+- **Methods**: Procedures for achieving the goals.
+- **Selection Rules**: Criteria for choosing among methods.
+
+#### Example Test Case: User Checking Current Weather
+
+**Goal**: Check the current weather for a specific city.
+
+**Operators**:
+1. Click on the text field.
+2. Type city name.
+3. Click "Get Weather."
+
+**Methods**:
+- **Method 1**: 
+  - Type the city name.
+  - Click the "Get Weather" button.
+
+**Selection Rules**: 
+- If the city is known and spelled correctly, use Method 1.
+- If the user decides to check the forecast instead, go to the 7-Day Forecast screen.
+
+### Applying GOMS to the Test Case
+
+**GOMS Representation**:
+1. **Goal**: Check current weather
+   - **Method 1**:
+     - **Operators**:
+       1. Click on the text field
+       2. Type "Los Angeles"
+       3. Click "Get Weather"
+       4. (Display current weather)
+
+#### Analysis:
+- **Time Complexity**: Each operator has an estimated time (e.g., clicking: 1 second, typing: 2 seconds). 
+- Total time = (1 + 2 + 1) seconds = 4 seconds.
+
+### Example Test Case: User Checking 7-Day Forecast
+
+**Goal**: View the 7-day weather forecast.
+
+**Operators**:
+1. Click "7-Day Forecast."
+
+**Methods**:
+- **Method 1**: 
+  - Click the "7-Day Forecast" button.
+
+**GOMS Representation**:
+1. **Goal**: View 7-day forecast
+   - **Method 1**:
+     - **Operators**:
+       1. Click "7-Day Forecast"
+       2. (Display forecast)
+
+#### Analysis:
+- **Time Complexity**: Clicking the button is quick, maybe 1 second. 
+
+Total time = 1 second.
+
+### Conclusion
+
+In summary, we’ve designed a paper prototype for a weather app and utilized GOMS to model user behavior for specific tasks. By breaking down user goals, operators, methods, and selection rules, we can better understand and optimize the user experience. 
+
+This method is particularly useful for predicting user performance and identifying potential design improvements.

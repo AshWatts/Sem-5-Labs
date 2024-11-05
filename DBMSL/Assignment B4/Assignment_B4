@@ -1,0 +1,84 @@
+te@sel-a1-216-18:~/31283/Assignment B4$ python3 Assignment_B4.py
+Success
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 1
+
+Enter the name of the person: Ayush
+Enter the surname of the person: Wattamwar
+Enter the id of the person: 22231
+Enter the age of the person: 20
+Document inserted successfully.
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 2
+
+Enter the id of the person to find: 22231
+Found: {'_id': ObjectId('670e26dc693c19bfa4027744'), 'Name': 'Ayush', 'Surname': 'Wattamwar', 'age': 20, 'id': 22231}
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 3
+
+Enter the id of the person to update: 22231
+Enter the new age: 21
+Document updated successfully.
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 2
+
+Enter the id of the person to find: 22231
+Found: {'_id': ObjectId('670e26dc693c19bfa4027744'), 'Name': 'Ayush', 'Surname': 'Wattamwar', 'age': 21, 'id': 22231}
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 4
+
+Enter the id of the person to delete: 22231
+Document deleted successfully.
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 2
+
+Enter the id of the person to find: 22231
+No person found with that id.
+
+Menu Options:
+1. Insert
+2. Find
+3. Update
+4. Delete
+5. Exit
+Enter your choice here: 5
+
+Exiting the program.
+
+te@sel-a1-216-18:~/31283/Assignment B4$ 

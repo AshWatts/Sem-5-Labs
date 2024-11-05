@@ -1,0 +1,49 @@
+mysql> CREATE TABLE Areas (
+    ->     radius INT,
+    ->     area   FLOAT
+    -> );
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> DELIMITER $$
+mysql> 
+mysql> CREATE PROCEDURE CalculateAreas()
+    -> BEGIN
+    ->     DECLARE v_radius INT;
+    ->     DECLARE v_area FLOAT;
+    ->     
+    ->     SET v_radius = 5;
+    ->     
+    ->     WHILE v_radius <= 9 DO
+    ->         SET v_area = PI() * v_radius * v_radius;
+    ->         INSERT INTO Areas (radius, area) VALUES (v_radius, v_area);
+    ->         SET v_radius = v_radius + 1;
+    ->     END WHILE;
+    -> END $$
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> CALL CalculateAreas();
+Query OK, 5 rows affected (0.18 sec)
+
+mysql> SELECT * FROM Areas;
++--------+---------+
+| radius | area    |
++--------+---------+
+|      5 | 78.5398 |
+|      6 | 113.097 |
+|      7 | 153.938 |
+|      8 | 201.062 |
+|      9 | 254.469 |
++--------+---------+
+5 rows in set (0.00 sec)
+
+mysql> describe Areas;
++--------+---------+------+-----+---------+-------+
+| Field  | Type    | Null | Key | Default | Extra |
++--------+---------+------+-----+---------+-------+
+| radius | int(11) | YES  |     | NULL    |       |
+| area   | float   | YES  |     | NULL    |       |
++--------+---------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+

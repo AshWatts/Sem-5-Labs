@@ -1,0 +1,284 @@
+te31283_db> use Institute  # Create or switch to the Institute database
+switched to db Institute
+Institute> db.Student.insertMany([
+...   { studId: 101, studName: "XYZ", studAge: 23, studBranch: "Computer Engineering", studCity: "Pune", subjects: ["Database", "Computer Network"] },
+...   { studId: 102, studName: "ABC", studAge: 26, studBranch: "Mechanical Engineering", studCity: "Mumbai", subjects: ["Mechanics", "Thermodynamics"] },
+...   { studId: 103, studName: "PQR", studAge: 22, studBranch: "Civil Engineering", studCity: "Delhi", subjects: ["Construction", "Surveying"] },
+...   { studId: 104, studName: "LMN", studAge: 20, studBranch: "IT", studCity: "Chennai", subjects: ["Programming", "Database"] }
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("66ed0fbd682ab8dc37837de7"),
+    '1': ObjectId("66ed0fbd682ab8dc37837de8"),
+    '2': ObjectId("66ed0fbd682ab8dc37837de9"),
+    '3': ObjectId("66ed0fbd682ab8dc37837dea")
+  }
+}
+Institute> db.Student.find({}, { studName: 1, studBranch: 1, _id: 0 });
+[
+  { studName: 'XYZ', studBranch: 'Computer Engineering' },
+  { studName: 'ABC', studBranch: 'Mechanical Engineering' },
+  { studName: 'PQR', studBranch: 'Civil Engineering' },
+  { studName: 'LMN', studBranch: 'IT' }
+]
+Institute> db.Student.find({ studId: 102 });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de8"),
+    studId: 102,
+    studName: 'ABC',
+    studAge: 26,
+    studBranch: 'Mechanical Engineering',
+    studCity: 'Mumbai',
+    subjects: [ 'Mechanics', 'Thermodynamics' ]
+  }
+]
+Institute> db.Student.find({}, { studId: 1, studName: 1, _id: 0 }).sort({ studAge: -1 });
+[
+  { studId: 102, studName: 'ABC' },
+  { studId: 101, studName: 'XYZ' },
+  { studId: 103, studName: 'PQR' },
+  { studId: 104, studName: 'LMN' }
+]
+Institute> db.Student.find({ studAge: { $gt: 25 } }, { studName: 1, studBranch: 1, _id: 0 });
+[ { studName: 'ABC', studBranch: 'Mechanical Engineering' } ]
+Institute> db.Student.find().sort({ studAge: 1 }).limit(3);
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837dea"),
+    studId: 104,
+    studName: 'LMN',
+    studAge: 20,
+    studBranch: 'IT',
+    studCity: 'Chennai',
+    subjects: [ 'Programming', 'Database' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de9"),
+    studId: 103,
+    studName: 'PQR',
+    studAge: 22,
+    studBranch: 'Civil Engineering',
+    studCity: 'Delhi',
+    subjects: [ 'Construction', 'Surveying' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  }
+]
+Institute> db.Student.find({ studId: 101, studBranch: /Computer/ });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  }
+]
+Institute> db.Student.find({ $or: [{ studBranch: /Computer/ }, { studAge: { $lt: 22 } }] });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837dea"),
+    studId: 104,
+    studName: 'LMN',
+    studAge: 20,
+    studBranch: 'IT',
+    studCity: 'Chennai',
+    subjects: [ 'Programming', 'Database' ]
+  }
+]
+Institute> db.Student.find({ studBranch: { $ne: "Civil Engineering" }, studCity: { $ne: "Mumbai" } });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837dea"),
+    studId: 104,
+    studName: 'LMN',
+    studAge: 20,
+    studBranch: 'IT',
+    studCity: 'Chennai',
+    subjects: [ 'Programming', 'Database' ]
+  }
+]
+Institute> db.Student.find({ studAge: { $lte: 22 } });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de9"),
+    studId: 103,
+    studName: 'PQR',
+    studAge: 22,
+    studBranch: 'Civil Engineering',
+    studCity: 'Delhi',
+    subjects: [ 'Construction', 'Surveying' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837dea"),
+    studId: 104,
+    studName: 'LMN',
+    studAge: 20,
+    studBranch: 'IT',
+    studCity: 'Chennai',
+    subjects: [ 'Programming', 'Database' ]
+  }
+]
+Institute> db.Student.find({ studBranch: { $in: ["Computer Engineering", "Civil Engineering", "IT"] } });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de9"),
+    studId: 103,
+    studName: 'PQR',
+    studAge: 22,
+    studBranch: 'Civil Engineering',
+    studCity: 'Delhi',
+    subjects: [ 'Construction', 'Surveying' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837dea"),
+    studId: 104,
+    studName: 'LMN',
+    studAge: 20,
+    studBranch: 'IT',
+    studCity: 'Chennai',
+    subjects: [ 'Programming', 'Database' ]
+  }
+]
+Institute> db.Student.find({ subjects: "Database" });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  },
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837dea"),
+    studId: 104,
+    studName: 'LMN',
+    studAge: 20,
+    studBranch: 'IT',
+    studCity: 'Chennai',
+    subjects: [ 'Programming', 'Database' ]
+  }
+]
+Institute> db.Student.find({ subjects: { $eq: "Computer Network", $size: 2 } });
+[
+  {
+    _id: ObjectId("66ed0fbd682ab8dc37837de7"),
+    studId: 101,
+    studName: 'XYZ',
+    studAge: 23,
+    studBranch: 'Computer Engineering',
+    studCity: 'Pune',
+    subjects: [ 'Database', 'Computer Network' ]
+  }
+]
+Institute> db.Student.countDocuments();
+4
+Institute> db.Student.countDocuments({ studBranch: "Computer Engineering" });
+1
+Institute> db.Student.updateOne({ studId: 102 }, { $set: { studBranch: "Mechanical Engineering" } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 0,
+  upsertedCount: 0
+}
+Institute> db.Student.updateMany({ studBranch: "Civil" }, { $set: { studBranch: "Civil Engineering" } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 0
+}
+Institute> db.Student.updateOne({ studId: 104 }, { $set: { studName: "New Name", studAge: 21 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Institute> db.Student.updateMany({}, { $rename: { subjects: "studSub" } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 4,
+  modifiedCount: 4,
+  upsertedCount: 0
+}
+Institute> db.Student.updateOne({ studName: "XYZ" }, { $inc: { studAge: 3 } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Institute> db.Student.updateOne({ studId: 101 }, { $unset: { studAge: "" } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+Institute> db.Student.updateMany({}, { $set: { studContact: { personal: 1234, parents: 2345 } } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 4,
+  modifiedCount: 4,
+  upsertedCount: 0
+}
+Institute> db.Student.deleteOne({ studId: 103 });
+{ acknowledged: true, deletedCount: 1 }
+Institute> db.Student.deleteMany({});
+{ acknowledged: true, deletedCount: 3 }
+Institute> db.Student.drop();
+true
+Institute> use Institute
+already on db Institute
+Institute> db.dropDatabase();
+{ ok: 1, dropped: 'Institute' }
+

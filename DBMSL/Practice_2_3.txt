@@ -1,0 +1,479 @@
+Setting environment for MariaDB 11.5 (x64)
+
+C:\Windows\System32>mysql -u root -p
+Enter password: ********
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 5
+Server version: 11.5.2-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| pracs              |
+| sys                |
++--------------------+
+5 rows in set (0.010 sec)
+
+MariaDB [(none)]> use pracs;
+Database changed
+MariaDB [pracs]> show tables;
++-----------------+
+| Tables_in_pracs |
++-----------------+
+| prac2_dept      |
+| prac2_employee  |
+| prac2_project   |
+| prac3_customers |
++-----------------+
+4 rows in set (0.011 sec)
+
+MariaDB [pracs]> select * from prac3_customers;
+Empty set (0.038 sec)
+
+MariaDB [pracs]> describe prac3_customers;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| Customer_id    | int(11)     | NO   | PRI | NULL    |       |
+| Customer_name  | varchar(35) | YES  |     | NULL    |       |
+| Customer_phone | int(11)     | YES  |     | NULL    |       |
+| Customer_age   | int(11)     | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+4 rows in set (0.028 sec)
+
+MariaDB [pracs]> create table prac3_products(
+    -> Product_id int primary key,
+    -> Product_name varchar(35),
+    -> price decimal(10,2)
+    -> );
+Query OK, 0 rows affected (0.056 sec)
+
+MariaDB [pracs]> describe prac3_products;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| Product_id   | int(11)       | NO   | PRI | NULL    |       |
+| Product_name | varchar(35)   | YES  |     | NULL    |       |
+| price        | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+3 rows in set (0.022 sec)
+
+MariaDB [pracs]> create table prac3_orders(
+    -> Order_id int primary key,
+    -> Customer_id int,
+    -> Product_id int,
+    -> Order_date date
+    -> );
+Query OK, 0 rows affected (0.024 sec)
+
+MariaDB [pracs]> describe prac3_orders;
++-------------+---------+------+-----+---------+-------+
+| Field       | Type    | Null | Key | Default | Extra |
++-------------+---------+------+-----+---------+-------+
+| Order_id    | int(11) | NO   | PRI | NULL    |       |
+| Customer_id | int(11) | YES  |     | NULL    |       |
+| Product_id  | int(11) | YES  |     | NULL    |       |
+| Order_date  | date    | YES  |     | NULL    |       |
++-------------+---------+------+-----+---------+-------+
+4 rows in set (0.029 sec)
+
+MariaDB [pracs]> alter table prac3_orders
+    -> foreign key (Customer_id) references prac3_customers (Customer_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foreign key (Customer_id) references prac3_customers (Customer_id)' at line 2
+MariaDB [pracs]> foreign key (Customer_id) add constrain fk_customers references prac3_customers (Customer_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foreign key (Customer_id) add constrain fk_customers references prac3_custome...' at line 1
+MariaDB [pracs]> ALTER TABLE prac3_orders
+    -> ADD CONSTRAINT fk_customer
+    -> FOREIGN KEY (Customer_id) REFERENCES prac3_customers (Customer_id);
+Query OK, 0 rows affected (0.034 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> show tables;
++-----------------+
+| Tables_in_pracs |
++-----------------+
+| prac2_dept      |
+| prac2_employee  |
+| prac2_project   |
+| prac3_customers |
+| prac3_orders    |
+| prac3_products  |
++-----------------+
+6 rows in set (0.001 sec)
+
+MariaDB [pracs]> describe prac3_customers;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| Customer_id    | int(11)     | NO   | PRI | NULL    |       |
+| Customer_name  | varchar(35) | YES  |     | NULL    |       |
+| Customer_phone | int(11)     | YES  |     | NULL    |       |
+| Customer_age   | int(11)     | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+4 rows in set (0.011 sec)
+
+MariaDB [pracs]> describe prac3_orders;
++-------------+---------+------+-----+---------+-------+
+| Field       | Type    | Null | Key | Default | Extra |
++-------------+---------+------+-----+---------+-------+
+| Order_id    | int(11) | NO   | PRI | NULL    |       |
+| Customer_id | int(11) | YES  | MUL | NULL    |       |
+| Product_id  | int(11) | YES  |     | NULL    |       |
+| Order_date  | date    | YES  |     | NULL    |       |
++-------------+---------+------+-----+---------+-------+
+4 rows in set (0.022 sec)
+
+MariaDB [pracs]> describe prac3_products;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| Product_id   | int(11)       | NO   | PRI | NULL    |       |
+| Product_name | varchar(35)   | YES  |     | NULL    |       |
+| price        | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+3 rows in set (0.020 sec)
+
+MariaDB [pracs]> create table prac3_orderdetails(
+    -> Orderdetails_id int primary key,
+    -> Order_id int,
+    -> Product_id int,
+    -> Quantity int,
+    -> foreign key (Order_id) references prac3_orders (Order_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 6
+MariaDB [pracs]> foreign key (Order_id) references prac3_orders (Order_id),
+    -> foreign key (Product_id) references prac3_products (Product_id),
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foreign key (Order_id) references prac3_orders (Order_id),
+foreign key (Produ...' at line 1
+MariaDB [pracs]> create table prac3_orderdetails(
+    -> Orderdetails_id int primary key,
+    -> Order_id int,
+    -> Product_id int,
+    -> Quantity int,
+    -> foreign key (Order_id) references prac3_orders (Order_id),
+    -> foreign key (Product_id) references prac3_products (Product_id),
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ')' at line 8
+MariaDB [pracs]> CREATE TABLE prac3_orderdetails (
+    ->     Orderdetails_id INT PRIMARY KEY,
+    ->     Order_id INT,
+    ->     Product_id INT,
+    ->     Quantity INT,
+    ->     FOREIGN KEY (Order_id) REFERENCES prac3_orders (Order_id),
+    ->     FOREIGN KEY (Product_id) REFERENCES prac3_products (Product_id)
+    -> );
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [pracs]> show tables;
++--------------------+
+| Tables_in_pracs    |
++--------------------+
+| prac2_dept         |
+| prac2_employee     |
+| prac2_project      |
+| prac3_customers    |
+| prac3_orderdetails |
+| prac3_orders       |
+| prac3_products     |
++--------------------+
+7 rows in set (0.001 sec)
+
+MariaDB [pracs]> select * from prac3_customers;
+Empty set (0.000 sec)
+
+MariaDB [pracs]> describe prac3_customers;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| Customer_id    | int(11)     | NO   | PRI | NULL    |       |
+| Customer_name  | varchar(35) | YES  |     | NULL    |       |
+| Customer_phone | int(11)     | YES  |     | NULL    |       |
+| Customer_age   | int(11)     | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+4 rows in set (0.023 sec)
+
+MariaDB [pracs]> describe prac3_orderdetails;
++-----------------+---------+------+-----+---------+-------+
+| Field           | Type    | Null | Key | Default | Extra |
++-----------------+---------+------+-----+---------+-------+
+| Orderdetails_id | int(11) | NO   | PRI | NULL    |       |
+| Order_id        | int(11) | YES  | MUL | NULL    |       |
+| Product_id      | int(11) | YES  | MUL | NULL    |       |
+| Quantity        | int(11) | YES  |     | NULL    |       |
++-----------------+---------+------+-----+---------+-------+
+4 rows in set (0.021 sec)
+
+MariaDB [pracs]> describe prac3_orders;
++-------------+---------+------+-----+---------+-------+
+| Field       | Type    | Null | Key | Default | Extra |
++-------------+---------+------+-----+---------+-------+
+| Order_id    | int(11) | NO   | PRI | NULL    |       |
+| Customer_id | int(11) | YES  | MUL | NULL    |       |
+| Product_id  | int(11) | YES  |     | NULL    |       |
+| Order_date  | date    | YES  |     | NULL    |       |
++-------------+---------+------+-----+---------+-------+
+4 rows in set (0.020 sec)
+
+MariaDB [pracs]> describe prac3_products;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| Product_id   | int(11)       | NO   | PRI | NULL    |       |
+| Product_name | varchar(35)   | YES  |     | NULL    |       |
+| price        | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+3 rows in set (0.020 sec)
+
+MariaDB [pracs]> insert into prac3_customers (Customer_id, Customer_name, Customer_phone, Customer_age) values
+    -> (1, 'AZ', 9999, 20),
+    -> (2, 'BY', 9989, 22),
+    -> (3, 'CX', 9979, 25),
+    -> (4, 'DW', 9969, 29),
+    -> (5, 'EV', 9959, 27);
+Query OK, 5 rows affected (0.016 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> insert into prac3_products (Product_id, Product_name, price) values
+    -> (1, 'AA', 100.50),
+    -> (2, 'BB', 105.75),
+    -> (3, 'CC', 125.25),
+    -> (4, 'DD', 112.25),
+    -> (5, 'EE', 98.65);
+Query OK, 5 rows affected (0.003 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> insert into prac3_orders (Order_id, Customer_id, Product_id, Order_date) values
+    -> (1, 1, 1, '2024-01-01'),
+    -> (2, 2, 2, '2024-02-01'),
+    -> (3, 3, 3, '2024-03-01'),
+    -> (4, 4, 4, '2024-04-01'),
+    -> (5, 5, 5, '2024-05-01');
+Query OK, 5 rows affected (0.012 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> insert into prac3_orderdetailss (Orderdetails_id, Order_id, Product_id, Quantity) values
+    -> (1, 1, 1, 4),
+    -> (2, 2, 2, 2),
+    -> (3, 3, 3, 7),
+    -> (4, 4, 4, 13),
+    -> (5, 5, 5, 1);
+ERROR 1146 (42S02): Table 'pracs.prac3_orderdetailss' doesn't exist
+MariaDB [pracs]> insert into prac3_orderdetailss (Orderdetails_id, Order_id, Product_id, Quantity) values
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1
+MariaDB [pracs]> insert into prac3_orderdetails (Orderdetails_id, Order_id, Product_id, Quantity) values
+    -> (1, 1, 1, 4),
+    -> (2, 2, 2, 2),
+    -> (3, 3, 3, 7),
+    -> (4, 4, 4, 13),
+    -> (5, 5, 5, 1);
+Query OK, 5 rows affected (0.011 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> select * from prac3_customers;
++-------------+---------------+----------------+--------------+
+| Customer_id | Customer_name | Customer_phone | Customer_age |
++-------------+---------------+----------------+--------------+
+|           1 | AZ            |           9999 |           20 |
+|           2 | BY            |           9989 |           22 |
+|           3 | CX            |           9979 |           25 |
+|           4 | DW            |           9969 |           29 |
+|           5 | EV            |           9959 |           27 |
++-------------+---------------+----------------+--------------+
+5 rows in set (0.000 sec)
+
+MariaDB [pracs]> select * from prac3_products;
++------------+--------------+--------+
+| Product_id | Product_name | price  |
++------------+--------------+--------+
+|          1 | AA           | 100.50 |
+|          2 | BB           | 105.75 |
+|          3 | CC           | 125.25 |
+|          4 | DD           | 112.25 |
+|          5 | EE           |  98.65 |
++------------+--------------+--------+
+5 rows in set (0.000 sec)
+
+MariaDB [pracs]> select * from prac3_orders;
++----------+-------------+------------+------------+
+| Order_id | Customer_id | Product_id | Order_date |
++----------+-------------+------------+------------+
+|        1 |           1 |          1 | 2024-01-01 |
+|        2 |           2 |          2 | 2024-02-01 |
+|        3 |           3 |          3 | 2024-03-01 |
+|        4 |           4 |          4 | 2024-04-01 |
+|        5 |           5 |          5 | 2024-05-01 |
++----------+-------------+------------+------------+
+5 rows in set (0.000 sec)
+
+MariaDB [pracs]> select * from prac3_orderdetails;
++-----------------+----------+------------+----------+
+| Orderdetails_id | Order_id | Product_id | Quantity |
++-----------------+----------+------------+----------+
+|               1 |        1 |          1 |        4 |
+|               2 |        2 |          2 |        2 |
+|               3 |        3 |          3 |        7 |
+|               4 |        4 |          4 |       13 |
+|               5 |        5 |          5 |        1 |
++-----------------+----------+------------+----------+
+5 rows in set (0.000 sec)
+
+MariaDB [pracs]> create view prac3_customerorders as
+    -> select c.Customer_id, c.Customer_name, o.Order_id, o.Order_date
+    -> from prac3_customers
+    -> c
+    -> join prac3_orders o
+    -> on c.Customer_id = o.Customer_id;
+Query OK, 0 rows affected (0.011 sec)
+
+MariaDB [pracs]> select * from prac3_customerorders;
++-------------+---------------+----------+------------+
+| Customer_id | Customer_name | Order_id | Order_date |
++-------------+---------------+----------+------------+
+|           1 | AZ            |        1 | 2024-01-01 |
+|           2 | BY            |        2 | 2024-02-01 |
+|           3 | CX            |        3 | 2024-03-01 |
+|           4 | DW            |        4 | 2024-04-01 |
+|           5 | EV            |        5 | 2024-05-01 |
++-------------+---------------+----------+------------+
+5 rows in set (0.020 sec)
+
+MariaDB [pracs]> create index idx_product_name on prac3_products (Product_name);
+Query OK, 0 rows affected (0.032 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> show index from prac3_products;
++----------------+------------+------------------+--------------+--------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| Table          | Non_unique | Key_name         | Seq_in_index | Column_name  | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Ignored |
++----------------+------------+------------------+--------------+--------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| prac3_products |          0 | PRIMARY          |            1 | Product_id   | A         |           5 |     NULL | NULL   |      | BTREE      |         |               | NO      |
+| prac3_products |          1 | idx_product_name |            1 | Product_name | A         |           5 |     NULL | NULL   | YES  | BTREE      |         |               | NO      |
++----------------+------------+------------------+--------------+--------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+2 rows in set (0.002 sec)
+
+MariaDB [pracs]> alter table prac3_customers
+    -> add constraint unique_phone_number unique (Customer_phone);
+Query OK, 0 rows affected (0.035 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [pracs]> show tables;
++----------------------+
+| Tables_in_pracs      |
++----------------------+
+| prac2_dept           |
+| prac2_employee       |
+| prac2_project        |
+| prac3_customerorders |
+| prac3_customers      |
+| prac3_orderdetails   |
+| prac3_orders         |
+| prac3_products       |
++----------------------+
+8 rows in set (0.028 sec)
+
+MariaDB [pracs]> select * from prac2_dept;
+ERROR 2006 (HY000): Server has gone away
+No connection. Trying to reconnect...
+Connection id:    6
+Current database: pracs
+
++---------+------------------------+---------------+
+| Dept_id | Dept_name              | Dept_location |
++---------+------------------------+---------------+
+| comp    | Computer Science       | Building A    |
+| entc    | Electronics            | Building C    |
+| it      | Information Technology | Building B    |
++---------+------------------------+---------------+
+3 rows in set (0.123 sec)
+
+MariaDB [pracs]> select * from prac2_employee;
++--------+---------+---------------+------------+--------------+
+| Emp_id | Dept_id | Emp_name      | Emp_salary | Emp_JoinDate |
++--------+---------+---------------+------------+--------------+
+| E001   | comp    | Alice Smith   |      66000 | 2021-01-15   |
+| E002   | comp    | Bob Johnson   |      71500 | 2022-02-20   |
+| E003   | it      | Charlie Brown |      77000 | 2021-03-10   |
+| E004   | it      | Diana Prince  |      62000 | 2023-05-22   |
+| E005   | entc    | Evan White    |      63800 | 2020-04-30   |
+| E006   | entc    | Fiona Green   |      64900 | 2022-06-12   |
+| E007   | comp    | George Black  |      79200 | 2021-07-05   |
+| E008   | it      | Hannah Blue   |      60000 | 2023-08-18   |
+| E009   | entc    | Isaac Grey    |      67100 | 2020-09-25   |
+| E010   | comp    | Julia Red     |      74800 | 2022-10-14   |
++--------+---------+---------------+------------+--------------+
+10 rows in set (0.007 sec)
+
+MariaDB [pracs]> select * from prac2_project;
++---------+---------+------------------+---------------+-----------+
+| Proj_id | Dept_id | Proj_name        | Proj_location | Proj_year |
++---------+---------+------------------+---------------+-----------+
+| P001    | comp    | AI Development   | Lab 101       |      2023 |
+| P002    | comp    | Web Application  | Lab 102       |      2022 |
+| P003    | it      | Network Upgrade  | Data Center   |      2023 |
+| P004    | it      | Cloud Migration  | Server Room   |      2022 |
+| P006    | entc    | Robotics Project | Workshop      |      2022 |
++---------+---------+------------------+---------------+-----------+
+5 rows in set (0.004 sec)
+
+MariaDB [pracs]> select * from prac3_customerorders;
+ERROR 2006 (HY000): Server has gone away
+No connection. Trying to reconnect...
+Connection id:    7
+Current database: pracs
+
++-------------+---------------+----------+------------+
+| Customer_id | Customer_name | Order_id | Order_date |
++-------------+---------------+----------+------------+
+|           1 | AZ            |        1 | 2024-01-01 |
+|           2 | BY            |        2 | 2024-02-01 |
+|           3 | CX            |        3 | 2024-03-01 |
+|           4 | DW            |        4 | 2024-04-01 |
+|           5 | EV            |        5 | 2024-05-01 |
++-------------+---------------+----------+------------+
+5 rows in set (0.090 sec)
+
+MariaDB [pracs]> select * from prac3_customers;
++-------------+---------------+----------------+--------------+
+| Customer_id | Customer_name | Customer_phone | Customer_age |
++-------------+---------------+----------------+--------------+
+|           1 | AZ            |           9999 |           20 |
+|           2 | BY            |           9989 |           22 |
+|           3 | CX            |           9979 |           25 |
+|           4 | DW            |           9969 |           29 |
+|           5 | EV            |           9959 |           27 |
++-------------+---------------+----------------+--------------+
+5 rows in set (0.000 sec)
+
+MariaDB [pracs]> select * from prac3_orders;
++----------+-------------+------------+------------+
+| Order_id | Customer_id | Product_id | Order_date |
++----------+-------------+------------+------------+
+|        1 |           1 |          1 | 2024-01-01 |
+|        2 |           2 |          2 | 2024-02-01 |
+|        3 |           3 |          3 | 2024-03-01 |
+|        4 |           4 |          4 | 2024-04-01 |
+|        5 |           5 |          5 | 2024-05-01 |
++----------+-------------+------------+------------+
+5 rows in set (0.001 sec)
+
+MariaDB [pracs]> select * from prac3_products;
++------------+--------------+--------+
+| Product_id | Product_name | price  |
++------------+--------------+--------+
+|          1 | AA           | 100.50 |
+|          2 | BB           | 105.75 |
+|          3 | CC           | 125.25 |
+|          4 | DD           | 112.25 |
+|          5 | EE           |  98.65 |
++------------+--------------+--------+
+5 rows in set (0.010 sec)
+
+MariaDB [pracs]>

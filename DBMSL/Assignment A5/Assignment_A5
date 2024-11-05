@@ -1,0 +1,77 @@
+mysql> CREATE TABLE Stud_Marks (
+    ->     rollno INT AUTO_INCREMENT PRIMARY KEY,
+    ->     name VARCHAR(20) NOT NULL,
+    ->     total_marks INT NOT NULL
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> 
+mysql> CREATE TABLE Result (
+    ->     rollno INT,
+    ->     name VARCHAR(20) NOT NULL,
+    ->     class VARCHAR(20) NOT NULL,
+    ->     FOREIGN KEY (rollno) REFERENCES Stud_Marks(rollno)
+    -> );
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> DELIMITER $$
+mysql> 
+mysql> CREATE TRIGGER after_insert_stud_marks
+    -> AFTER INSERT ON Stud_Marks
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     DECLARE v_class VARCHAR(20);
+    -> 
+    ->     IF NEW.total_marks >= 900 AND NEW.total_marks <= 1500 THEN
+    ->         IF NEW.total_marks >= 990 THEN
+    ->             SET v_class = 'Distinction';
+    ->         ELSEIF NEW.total_marks BETWEEN 900 AND 989 THEN
+    ->             SET v_class = 'First Class';
+    ->         ELSEIF NEW.total_marks BETWEEN 825 AND 899 THEN
+    ->             SET v_class = 'Higher Second Class';
+    ->         ELSE
+    ->             SET v_class = 'No Category';
+    ->         END IF;
+    ->     ELSE
+    ->         SET v_class = 'No Category';
+    ->     END IF;
+    -> 
+    ->     INSERT INTO Result (rollno, name, class) VALUES (NEW.rollno, NEW.name, v_class);
+    -> END $$
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> INSERT INTO Stud_Marks (name, total_marks) VALUES
+    -> ('Alice', 950),
+    -> ('Bob', 1120),
+    -> ('Charlie', 880),
+    -> ('Diana', 1020),
+    -> ('Eve', 770);
+Query OK, 5 rows affected (0.13 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Stud_Marks;
++--------+---------+-------------+
+| rollno | name    | total_marks |
++--------+---------+-------------+
+|      1 | Alice   |         950 |
+|      2 | Bob     |        1120 |
+|      3 | Charlie |         880 |
+|      4 | Diana   |        1020 |
+|      5 | Eve     |         770 |
++--------+---------+-------------+
+5 rows in set (0.01 sec)
+
+mysql> SELECT * FROM Result;
++--------+---------+-------------+
+| rollno | name    | class       |
++--------+---------+-------------+
+|      1 | Alice   | First Class |
+|      2 | Bob     | Distinction |
+|      3 | Charlie | No Category |
+|      4 | Diana   | Distinction |
+|      5 | Eve     | No Category |
++--------+---------+-------------+
+5 rows in set (0.00 sec)
+

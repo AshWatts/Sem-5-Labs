@@ -1,0 +1,171 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| te31283_db         |
++--------------------+
+2 rows in set (0.00 sec)
+
+mysql> use te31283_db
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables;
++----------------------+
+| Tables_in_te31283_db |
++----------------------+
+| Circle_Area          |
+| Fine                 |
+| borrower             |
+| dept                 |
+| employee             |
+| employee_audit       |
+| employee_dept_view   |
+| project              |
+| results              |
+| stud_marks           |
++----------------------+
+10 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Library (
+    ->     BookID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Title VARCHAR(255) NOT NULL,
+    ->     Author VARCHAR(255) NOT NULL,
+    ->     PublishedYear INT NOT NULL,
+    ->     Genre VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.17 sec)
+
+mysql> INSERT INTO Library (Title, Author, PublishedYear, Genre) VALUES
+    -> ('The Great Gatsby', 'F. Scott Fitzgerald', 1925, 'Fiction'),
+    -> ('To Kill a Mockingbird', 'Harper Lee', 1960, 'Fiction'),
+    -> ('1984', 'George Orwell', 1949, 'Dystopian'),
+    -> ('Moby Dick', 'Herman Melville', 1851, 'Adventure'),
+    -> ('Pride and Prejudice', 'Jane Austen', 1813, 'Romance'),
+    -> ('The Catcher in the Rye', 'J.D. Salinger', 1951, 'Fiction'),
+    -> ('The Hobbit', 'J.R.R. Tolkien', 1937, 'Fantasy'),
+    -> ('Brave New World', 'Aldous Huxley', 1932, 'Dystopian'),
+    -> ('Crime and Punishment', 'Fyodor Dostoevsky', 1867, 'Philosophical'),
+    -> ('War and Peace', 'Leo Tolstoy', 1869, 'Historical');
+Query OK, 10 rows affected (0.03 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> select * from Library;
++--------+------------------------+---------------------+---------------+---------------+
+| BookID | Title                  | Author              | PublishedYear | Genre         |
++--------+------------------------+---------------------+---------------+---------------+
+|      1 | The Great Gatsby       | F. Scott Fitzgerald |          1925 | Fiction       |
+|      2 | To Kill a Mockingbird  | Harper Lee          |          1960 | Fiction       |
+|      3 | 1984                   | George Orwell       |          1949 | Dystopian     |
+|      4 | Moby Dick              | Herman Melville     |          1851 | Adventure     |
+|      5 | Pride and Prejudice    | Jane Austen         |          1813 | Romance       |
+|      6 | The Catcher in the Rye | J.D. Salinger       |          1951 | Fiction       |
+|      7 | The Hobbit             | J.R.R. Tolkien      |          1937 | Fantasy       |
+|      8 | Brave New World        | Aldous Huxley       |          1932 | Dystopian     |
+|      9 | Crime and Punishment   | Fyodor Dostoevsky   |          1867 | Philosophical |
+|     10 | War and Peace          | Leo Tolstoy         |          1869 | Historical    |
++--------+------------------------+---------------------+---------------+---------------+
+10 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Library_Audit (
+    ->     AuditID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     BookID INT,
+    ->     Title VARCHAR(255),
+    ->     Author VARCHAR(255),
+    ->     PublishedYear INT,
+    ->     Genre VARCHAR(50),
+    ->     ChangeType ENUM('UPDATE', 'DELETE'),
+    ->     ChangeTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -> );
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE TRIGGER before_library_update
+    -> BEFORE UPDATE ON Library
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Library_Audit (BookID, Title, Author, PublishedYear, Genre, ChangeType)
+    ->     VALUES (OLD.BookID, OLD.Title, OLD.Author, OLD.PublishedYear, OLD.Genre, 'UPDATE');
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE TRIGGER before_library_delete
+    -> BEFORE DELETE ON Library
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     INSERT INTO Library_Audit (BookID, Title, Author, PublishedYear, Genre, ChangeType)
+    ->     VALUES (OLD.BookID, OLD.Title, OLD.Author, OLD.PublishedYear, OLD.Genre, 'DELETE');
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> select * from Library;
++--------+------------------------+---------------------+---------------+---------------+
+| BookID | Title                  | Author              | PublishedYear | Genre         |
++--------+------------------------+---------------------+---------------+---------------+
+|      1 | The Great Gatsby       | F. Scott Fitzgerald |          1925 | Fiction       |
+|      2 | To Kill a Mockingbird  | Harper Lee          |          1960 | Fiction       |
+|      3 | 1984                   | George Orwell       |          1949 | Dystopian     |
+|      4 | Moby Dick              | Herman Melville     |          1851 | Adventure     |
+|      5 | Pride and Prejudice    | Jane Austen         |          1813 | Romance       |
+|      6 | The Catcher in the Rye | J.D. Salinger       |          1951 | Fiction       |
+|      7 | The Hobbit             | J.R.R. Tolkien      |          1937 | Fantasy       |
+|      8 | Brave New World        | Aldous Huxley       |          1932 | Dystopian     |
+|      9 | Crime and Punishment   | Fyodor Dostoevsky   |          1867 | Philosophical |
+|     10 | War and Peace          | Leo Tolstoy         |          1869 | Historical    |
++--------+------------------------+---------------------+---------------+---------------+
+10 rows in set (0.01 sec)
+
+mysql> select * from Library_Audit;
+Empty set (0.01 sec)
+
+mysql> DELETE FROM Library WHERE BookID = 6;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> DELETE FROM Library WHERE BookID = 8;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> UPDATE Library SET Title = 'Nineteen Eighty-Four', Author = 'George Orwell', PublishedYear = 1949, Genre = 'Science Fiction' WHERE BookID = 3;
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE Library SET Title = 'Moby Dick: The Whale', Author = 'Herman Melville', PublishedYear = 1851, Genre = 'Adventure Fiction' WHERE BookID = 4;
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from Library;
++--------+-----------------------+---------------------+---------------+-------------------+
+| BookID | Title                 | Author              | PublishedYear | Genre             |
++--------+-----------------------+---------------------+---------------+-------------------+
+|      1 | The Great Gatsby      | F. Scott Fitzgerald |          1925 | Fiction           |
+|      2 | To Kill a Mockingbird | Harper Lee          |          1960 | Fiction           |
+|      3 | Nineteen Eighty-Four  | George Orwell       |          1949 | Science Fiction   |
+|      4 | Moby Dick: The Whale  | Herman Melville     |          1851 | Adventure Fiction |
+|      5 | Pride and Prejudice   | Jane Austen         |          1813 | Romance           |
+|      7 | The Hobbit            | J.R.R. Tolkien      |          1937 | Fantasy           |
+|      9 | Crime and Punishment  | Fyodor Dostoevsky   |          1867 | Philosophical     |
+|     10 | War and Peace         | Leo Tolstoy         |          1869 | Historical        |
++--------+-----------------------+---------------------+---------------+-------------------+
+8 rows in set (0.00 sec)
+
+mysql> select * from Library_Audit;
++---------+--------+------------------------+-----------------+---------------+-----------+------------+---------------------+
+| AuditID | BookID | Title                  | Author          | PublishedYear | Genre     | ChangeType | ChangeTime          |
++---------+--------+------------------------+-----------------+---------------+-----------+------------+---------------------+
+|       1 |      6 | The Catcher in the Rye | J.D. Salinger   |          1951 | Fiction   | DELETE     | 2024-08-28 11:59:07 |
+|       2 |      8 | Brave New World        | Aldous Huxley   |          1932 | Dystopian | DELETE     | 2024-08-28 11:59:11 |
+|       3 |      3 | 1984                   | George Orwell   |          1949 | Dystopian | UPDATE     | 2024-08-28 11:59:16 |
+|       4 |      4 | Moby Dick              | Herman Melville |          1851 | Adventure | UPDATE     | 2024-08-28 11:59:16 |
++---------+--------+------------------------+-----------------+---------------+-----------+------------+---------------------+
+4 rows in set (0.00 sec)
+
